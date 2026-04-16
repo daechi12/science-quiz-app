@@ -1,0 +1,8 @@
+{
+  "name": "quiz-app",
+  "version": "1.0.0",
+  "description": "중3 과학 위치에너지 쪽지시험",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

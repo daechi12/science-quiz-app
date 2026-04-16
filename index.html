@@ -1,669 +1,674 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>중3 과학 위치에너지 퀴즈</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background: #f0f4f8;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 16px;
-    padding-bottom: 40px;
-  }
-  .app {
-    width: 100%;
-    max-width: 500px;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>중3 과학 위치에너지 쪽지시험</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* 공식 참고란 */
-  .formula-box {
-    background: #fff;
-    border: 2px solid #6366f1;
-    border-radius: 14px;
-    padding: 12px 16px;
-    margin-bottom: 14px;
-  }
-  .formula-box h3 {
-    font-size: 13px;
-    color: #6366f1;
-    font-weight: 700;
-    margin-bottom: 8px;
-    letter-spacing: 0.3px;
-  }
-  .formula-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px 12px;
-  }
-  .formula-item {
-    font-size: 12px;
-    color: #374151;
-    line-height: 1.6;
-  }
-  .formula-item span {
-    color: #6366f1;
-    font-weight: 700;
-  }
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --error: #dc2626;
+      --error-bg: #fee2e2;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --sub: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+    }
 
-  /* 진행 바 */
-  .progress-wrap {
-    margin-bottom: 14px;
-  }
-  .progress-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    color: #6b7280;
-    margin-bottom: 6px;
-  }
-  .progress-bar {
-    height: 8px;
-    background: #e5e7eb;
-    border-radius: 99px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #6366f1, #8b5cf6);
-    border-radius: 99px;
-    transition: width 0.4s ease;
-  }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  /* 카드 */
-  .card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 24px 20px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    margin-bottom: 14px;
-  }
-  .part-label {
-    font-size: 12px;
-    font-weight: 700;
-    color: #8b5cf6;
-    letter-spacing: 0.5px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-  }
-  .question-text {
-    font-size: 17px;
-    font-weight: 700;
-    color: #111827;
-    line-height: 1.6;
-    margin-bottom: 8px;
-    white-space: pre-wrap;
-  }
-  .hint-text {
-    font-size: 13px;
-    color: #f59e0b;
-    background: #fffbeb;
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 14px;
-    font-weight: 500;
-  }
+    /* ── Header ── */
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 16px 20px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(79,70,229,.25);
+    }
+    header h1 { font-size: 17px; font-weight: 700; letter-spacing: -.3px; }
+    header p  { font-size: 12px; opacity: .8; margin-top: 2px; }
 
-  /* OX 버튼 */
-  .ox-wrap {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-  }
-  .ox-btn {
-    flex: 1;
-    height: 64px;
-    border: 2.5px solid #e5e7eb;
-    border-radius: 14px;
-    font-size: 32px;
-    background: #fff;
-    cursor: pointer;
-    transition: all 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .ox-btn:active { transform: scale(0.96); }
-  .ox-btn.selected-correct { border-color: #10b981; background: #ecfdf5; }
-  .ox-btn.selected-wrong { border-color: #ef4444; background: #fef2f2; }
+    /* ── Progress ── */
+    .progress-wrap { padding: 0; margin-top: 10px; }
+    .progress-bar-bg {
+      height: 7px; background: rgba(255,255,255,.35);
+      border-radius: 99px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; background: #fff;
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: rgba(255,255,255,.85);
+      margin-top: 4px;
+    }
 
-  /* 객관식 */
-  .choice-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 16px;
-  }
-  .choice-btn {
-    min-height: 52px;
-    padding: 12px 16px;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    font-size: 15px;
-    font-family: 'Noto Sans KR', sans-serif;
-    font-weight: 500;
-    background: #fff;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.15s;
-    -webkit-tap-highlight-color: transparent;
-    color: #111827;
-  }
-  .choice-btn:active { transform: scale(0.98); }
-  .choice-btn.correct { border-color: #10b981; background: #ecfdf5; color: #065f46; }
-  .choice-btn.wrong { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
-  .choice-btn.show-answer { border-color: #10b981; background: #ecfdf5; color: #065f46; }
+    /* ── Reference Box ── */
+    .ref-box {
+      margin: 16px 16px 0;
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .ref-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .ref-item {
+      background: #fff; border-radius: 10px;
+      padding: 8px 10px; font-size: 12px; line-height: 1.5;
+      border: 1px solid #dbeafe;
+    }
+    .ref-item strong { color: var(--primary); }
+    .ref-toggle {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 700; color: #1d4ed8;
+      cursor: pointer; user-select: none;
+    }
+    .ref-toggle .arrow { transition: transform .25s; font-style: normal; }
+    .ref-toggle.collapsed .arrow { transform: rotate(-90deg); }
+    .ref-content {
+      overflow: hidden;
+      max-height: 500px;
+      transition: max-height .3s ease;
+    }
+    .ref-content.collapsed { max-height: 0; }
 
-  /* 숫자 입력 */
-  .number-wrap {
-    margin-top: 16px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  .number-input {
-    flex: 1;
-    height: 52px;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    font-size: 18px;
-    font-family: 'Noto Sans KR', sans-serif;
-    text-align: center;
-    color: #111827;
-    outline: none;
-    transition: border-color 0.15s;
-    padding: 0 12px;
-  }
-  .number-input:focus { border-color: #6366f1; }
-  .number-input.correct { border-color: #10b981; background: #ecfdf5; }
-  .number-input.wrong { border-color: #ef4444; background: #fef2f2; }
-  .unit-label {
-    font-size: 16px;
-    font-weight: 700;
-    color: #6b7280;
-    min-width: 28px;
-  }
-  .confirm-btn {
-    min-height: 52px;
-    padding: 0 20px;
-    background: #6366f1;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-family: 'Noto Sans KR', sans-serif;
-    font-weight: 700;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: background 0.15s;
-  }
-  .confirm-btn:active { background: #4f46e5; }
+    /* ── Main container ── */
+    main { padding: 16px; padding-bottom: 40px; }
 
-  /* 서술형 */
-  .essay-wrap {
-    margin-top: 16px;
-  }
-  .essay-input {
-    width: 100%;
-    min-height: 100px;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 14px;
-    font-family: 'Noto Sans KR', sans-serif;
-    color: #111827;
-    outline: none;
-    resize: none;
-    transition: border-color 0.15s;
-  }
-  .essay-input:focus { border-color: #6366f1; }
-  .essay-confirm-btn {
-    margin-top: 10px;
-    width: 100%;
-    min-height: 52px;
-    background: #6366f1;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-family: 'Noto Sans KR', sans-serif;
-    font-weight: 700;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
+    /* ── Part label ── */
+    .part-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .6px;
+      text-transform: uppercase; color: var(--primary);
+      background: #ede9fe; border-radius: 99px;
+      display: inline-block; padding: 3px 10px;
+      margin-bottom: 8px;
+    }
 
-  /* 피드백 */
-  .feedback {
-    margin-top: 16px;
-    padding: 14px;
-    border-radius: 12px;
-    font-size: 14px;
-    line-height: 1.7;
-    white-space: pre-wrap;
-  }
-  .feedback.correct {
-    background: #ecfdf5;
-    border: 1.5px solid #10b981;
-    color: #065f46;
-  }
-  .feedback.wrong {
-    background: #fef2f2;
-    border: 1.5px solid #ef4444;
-    color: #991b1b;
-  }
-  .feedback.essay {
-    background: #f0f9ff;
-    border: 1.5px solid #38bdf8;
-    color: #075985;
-  }
-  .feedback-icon {
-    font-size: 20px;
-    margin-bottom: 4px;
-    display: block;
-  }
-  .feedback-title {
-    font-weight: 700;
-    font-size: 15px;
-    margin-bottom: 6px;
-  }
+    /* ── Question Card ── */
+    .q-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      border: 2px solid transparent;
+      transition: border-color .2s;
+    }
+    .q-card.answered-correct { border-color: var(--success); }
+    .q-card.answered-wrong   { border-color: var(--error); }
 
-  /* 다음 버튼 */
-  .next-btn {
-    width: 100%;
-    min-height: 52px;
-    background: #6366f1;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-family: 'Noto Sans KR', sans-serif;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 12px;
-    -webkit-tap-highlight-color: transparent;
-    transition: background 0.15s;
-  }
-  .next-btn:active { background: #4f46e5; }
+    .q-num  { font-size: 11px; color: var(--sub); font-weight: 700; margin-bottom: 6px; }
+    .q-text { font-size: 15px; font-weight: 500; line-height: 1.6; margin-bottom: 4px; }
+    .q-hint {
+      font-size: 12px; color: #7c3aed;
+      background: #f5f3ff; border-radius: 8px;
+      padding: 6px 10px; margin: 8px 0;
+    }
+    .q-score-badge {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      background: #ede9fe; color: var(--primary); border-radius: 99px;
+      padding: 2px 8px; margin-bottom: 10px;
+    }
 
-  /* 결과 화면 */
-  .result-screen {
-    display: none;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .result-screen.show { display: flex; }
-  .result-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 28px 20px;
-    text-align: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
-  .result-emoji { font-size: 56px; margin-bottom: 10px; }
-  .result-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 6px; }
-  .result-score { font-size: 40px; font-weight: 700; color: #6366f1; margin-bottom: 4px; }
-  .result-percent { font-size: 16px; color: #6b7280; }
-  .result-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .result-btn {
-    width: 100%;
-    min-height: 52px;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-family: 'Noto Sans KR', sans-serif;
-    font-weight: 700;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .result-btn.primary { background: #6366f1; color: #fff; }
-  .result-btn.secondary { background: #fff; border: 2px solid #6366f1; color: #6366f1; }
-  .wrong-review-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #374151;
-    margin-bottom: 2px;
-  }
-  .wrong-review-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border-left: 4px solid #ef4444;
-  }
-  .wrong-review-card .part { font-size: 11px; color: #8b5cf6; font-weight: 700; margin-bottom: 6px; }
-  .wrong-review-card .q { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 8px; white-space: pre-wrap; }
-  .wrong-review-card .ans { font-size: 13px; color: #10b981; font-weight: 700; margin-bottom: 6px; }
-  .wrong-review-card .exp { font-size: 13px; color: #374151; line-height: 1.7; white-space: pre-wrap; background: #f9fafb; border-radius: 8px; padding: 10px; }
+    /* ── OX Buttons ── */
+    .ox-wrap { display: flex; gap: 10px; margin-top: 12px; }
+    .ox-btn {
+      flex: 1; min-height: 56px; font-size: 28px;
+      border: 2px solid var(--border);
+      border-radius: 12px; background: #fff;
+      cursor: pointer; transition: all .15s;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900;
+    }
+    .ox-btn:active { transform: scale(.95); }
+    .ox-btn.selected-correct { background: var(--success-bg); border-color: var(--success); }
+    .ox-btn.selected-wrong   { background: var(--error-bg);   border-color: var(--error); }
+    .ox-btn.correct-highlight { background: var(--success-bg); border-color: var(--success); }
+    .ox-btn:disabled { cursor: default; }
 
-  .quiz-screen { display: flex; flex-direction: column; }
-  .quiz-screen.hidden { display: none; }
-</style>
+    /* ── MC Buttons ── */
+    .mc-wrap { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .mc-btn {
+      width: 100%; min-height: 50px;
+      text-align: left; padding: 12px 14px;
+      font-size: 14px; font-family: inherit; font-weight: 500;
+      border: 2px solid var(--border);
+      border-radius: 12px; background: #fff;
+      cursor: pointer; transition: all .15s;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .mc-btn:active { transform: scale(.98); }
+    .mc-btn .mc-letter {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--bg); color: var(--primary);
+      font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .mc-btn.selected-correct { background: var(--success-bg); border-color: var(--success); }
+    .mc-btn.selected-wrong   { background: var(--error-bg);   border-color: var(--error); }
+    .mc-btn.correct-highlight { background: var(--success-bg); border-color: var(--success); }
+    .mc-btn:disabled { cursor: default; }
+
+    /* ── Number Input ── */
+    .num-wrap { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
+    .num-input {
+      flex: 1; height: 52px; font-size: 18px; font-weight: 700;
+      text-align: center; font-family: inherit;
+      border: 2px solid var(--border); border-radius: 12px;
+      background: #fff; color: var(--text);
+      outline: none; transition: border-color .15s;
+      -webkit-appearance: none; appearance: none;
+    }
+    .num-input:focus { border-color: var(--primary); }
+    .num-input.correct { border-color: var(--success); background: var(--success-bg); }
+    .num-input.wrong   { border-color: var(--error);   background: var(--error-bg); }
+    .num-input:disabled { cursor: default; }
+    .num-unit { font-size: 14px; color: var(--sub); font-weight: 700; white-space: nowrap; }
+    .submit-btn {
+      height: 52px; padding: 0 18px;
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 12px; cursor: pointer;
+      font-size: 14px; font-weight: 700; font-family: inherit;
+      white-space: nowrap; transition: background .15s;
+    }
+    .submit-btn:active { background: #3730a3; }
+    .submit-btn:disabled { background: #c7d2fe; cursor: default; }
+
+    /* ── Feedback ── */
+    .feedback {
+      margin-top: 12px; padding: 12px 14px;
+      border-radius: 12px; font-size: 13px; line-height: 1.6;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.correct { background: var(--success-bg); color: #15803d; border: 1.5px solid #86efac; }
+    .feedback.wrong   { background: var(--error-bg);   color: #b91c1c; border: 1.5px solid #fca5a5; }
+    .feedback .fb-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .feedback .fb-answer { font-weight: 700; }
+
+    /* ── Result Screen ── */
+    #result-screen { display: none; padding: 16px; padding-bottom: 60px; }
+    .result-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+      color: #fff; border-radius: 20px;
+      padding: 32px 24px; text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(79,70,229,.35);
+    }
+    .result-hero .score-num { font-size: 64px; font-weight: 900; line-height: 1; }
+    .result-hero .score-max { font-size: 18px; opacity: .8; }
+    .result-hero .result-grade { font-size: 22px; font-weight: 700; margin-top: 12px; }
+    .result-hero .result-sub   { font-size: 14px; opacity: .75; margin-top: 4px; }
+
+    .result-section-title {
+      font-size: 15px; font-weight: 700; color: var(--text);
+      margin: 20px 0 10px;
+    }
+    .wrong-card {
+      background: #fff; border-radius: 14px;
+      padding: 16px; margin-bottom: 12px;
+      border-left: 4px solid var(--error);
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .wrong-card .wc-num  { font-size: 11px; color: var(--error); font-weight: 700; margin-bottom: 4px; }
+    .wrong-card .wc-q    { font-size: 14px; font-weight: 500; line-height: 1.5; margin-bottom: 6px; }
+    .wrong-card .wc-mine { font-size: 13px; color: var(--error); }
+    .wrong-card .wc-ans  { font-size: 13px; color: var(--success); font-weight: 700; margin-top: 2px; }
+    .wrong-card .wc-exp  { font-size: 12px; color: var(--sub); margin-top: 6px; line-height: 1.5; }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+    .btn-primary {
+      flex: 1; height: 52px; background: var(--primary); color: #fff;
+      border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
+      font-family: inherit; cursor: pointer; transition: background .15s;
+    }
+    .btn-primary:active { background: #3730a3; }
+    .btn-secondary {
+      flex: 1; height: 52px; background: #fff; color: var(--primary);
+      border: 2px solid var(--primary); border-radius: 12px;
+      font-size: 15px; font-weight: 700; font-family: inherit;
+      cursor: pointer; transition: all .15s;
+    }
+    .btn-secondary:active { background: #ede9fe; }
+
+    .all-correct-banner {
+      text-align: center; padding: 20px;
+      font-size: 18px; font-weight: 700; color: var(--success);
+      background: var(--success-bg); border-radius: 14px;
+    }
+  </style>
 </head>
 <body>
-<div class="app">
 
-  <!-- 퀴즈 화면 -->
-  <div class="quiz-screen" id="quizScreen">
+<!-- ════════ QUIZ SCREEN ════════ -->
+<div id="quiz-screen">
 
-    <!-- 공식 참고란 -->
-    <div class="formula-box">
-      <h3>📐 공식 참고란</h3>
-      <div class="formula-grid">
-        <div class="formula-item">무게 = 질량 × <span>9.8</span> [N]</div>
-        <div class="formula-item">일 <span>W</span> = F × s [J]</div>
-        <div class="formula-item">위치에너지 = 무게 × 높이</div>
-        <div class="formula-item">= 질량 × 9.8 × h [J]</div>
-      </div>
-    </div>
-
-    <!-- 진행 바 -->
+  <header>
+    <h1>🔬 중3 과학 · 위치에너지 쪽지시험</h1>
+    <p>질량 · 무게 · 일 · 위치에너지</p>
     <div class="progress-wrap">
-      <div class="progress-info">
-        <span id="progressText">1 / 16</span>
-        <span id="scoreText">점수: 0점</span>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
       </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      <div class="progress-label">
+        <span id="progress-text">0 / 15 완료</span>
+        <span id="score-text">0점</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- 공식 참고란 -->
+    <div class="ref-box">
+      <div class="ref-toggle" id="ref-toggle" onclick="toggleRef()">
+        <span>📐 공식 참고란</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="ref-content" id="ref-content">
+        <div class="ref-grid" style="margin-top:10px">
+          <div class="ref-item"><strong>무게 (N)</strong><br>= 질량(kg) × 9.8</div>
+          <div class="ref-item"><strong>일 W (J)</strong><br>= 힘 F(N) × 거리 s(m)</div>
+          <div class="ref-item"><strong>위치에너지 (J)</strong><br>= 무게(N) × 높이(m)</div>
+          <div class="ref-item"><strong>높이 (m)</strong><br>= 위치에너지 ÷ 무게</div>
+        </div>
       </div>
     </div>
 
-    <!-- 문제 카드 -->
-    <div class="card" id="questionCard">
-      <div class="part-label" id="partLabel"></div>
-      <div class="question-text" id="questionText"></div>
-      <div class="hint-text" id="hintText" style="display:none"></div>
-      <div id="answerArea"></div>
-      <div id="feedbackArea"></div>
-      <button class="next-btn" id="nextBtn" style="display:none" onclick="nextQuestion()">다음 문제 →</button>
-    </div>
+    <div id="questions-container" style="margin-top:16px"></div>
+  </main>
+</div>
 
+<!-- ════════ RESULT SCREEN ════════ -->
+<div id="result-screen">
+  <div class="result-hero">
+    <div class="score-num" id="r-score">0</div>
+    <div class="score-max" id="r-max">/ 42점</div>
+    <div class="result-grade" id="r-grade"></div>
+    <div class="result-sub"  id="r-sub"></div>
   </div>
 
-  <!-- 결과 화면 -->
-  <div class="result-screen" id="resultScreen">
-    <div class="result-card">
-      <div class="result-emoji" id="resultEmoji"></div>
-      <div class="result-title">퀴즈 완료!</div>
-      <div class="result-score" id="resultScore"></div>
-      <div class="result-percent" id="resultPercent"></div>
-    </div>
-    <div class="result-actions">
-      <button class="result-btn primary" onclick="restartAll()">처음부터 다시</button>
-      <button class="result-btn secondary" id="wrongOnlyBtn" onclick="restartWrong()">틀린 문제만 다시</button>
-    </div>
-    <div id="wrongReviewSection"></div>
+  <div id="wrong-section">
+    <div class="result-section-title">❌ 틀린 문제 해설</div>
+    <div id="wrong-list"></div>
   </div>
 
+  <div class="btn-row">
+    <button class="btn-secondary" onclick="restartAll()">처음부터</button>
+    <button class="btn-primary" id="retry-wrong-btn" onclick="retryWrong()">틀린 문제만 다시</button>
+  </div>
 </div>
 
 <script>
-var questions = [
-  {part:"Part 1. O/X",q:"질량은 지구, 달, 화성 어디에서나 같다.",type:"ox",answer:"O",explain:"질량은 물체의 고유한 물질의 양이라 위치에 상관없이 일정해요."},
-  {part:"Part 1. O/X",q:"무게의 단위는 kg이다.",type:"ox",answer:"X",explain:"kg은 질량의 단위예요. 무게의 단위는 N(뉴턴)입니다."},
-  {part:"Part 1. O/X",q:"질량 1kg인 물체의 지구에서의 무게는 9.8N이다.",type:"ox",answer:"O",explain:"무게 = 질량 × 중력가속도 = 1 × 9.8 = 9.8N"},
-  {part:"Part 1. O/X",q:"W, F, s는 각각 일, 힘, 거리의 '단위'이다.",type:"ox",answer:"X",explain:"W, F, s는 이름(Work, Force, Distance)이에요!\n단위는 각각 J, N, m입니다."},
-  {part:"Part 1. O/X",q:"1N의 힘으로 1m를 이동시키면 한 일은 1J이다.",type:"ox",answer:"O",explain:"W = F × s = 1N × 1m = 1J"},
-  {part:"Part 2. 단위",q:"질량의 단위는?",type:"choice",options:["N","kg","J","m"],answer:"kg",explain:"질량의 단위는 kg(킬로그램)입니다."},
-  {part:"Part 2. 단위",q:"무게의 단위는?",type:"choice",options:["kg","m","N","J"],answer:"N",explain:"무게 = 질량 × 중력가속도, 단위는 N(뉴턴)"},
-  {part:"Part 2. 단위",q:"일(Work)의 단위는?",type:"choice",options:["W","N","m","J"],answer:"J",explain:"일의 단위는 J(줄)이에요. W는 이름이지 단위가 아닙니다!"},
-  {part:"Part 3. 무게",q:"질량 2kg인 물체의 무게는 몇 N?",type:"number",answer:19.6,unit:"N",explain:"무게 = 2kg × 9.8 = 19.6N"},
-  {part:"Part 3. 무게",q:"질량 5kg인 물체의 무게는 몇 N?",type:"number",answer:49,unit:"N",explain:"무게 = 5kg × 9.8 = 49N"},
-  {part:"Part 4. 일",q:"10N의 힘으로 물체를 5m 이동시켰다. 한 일은 몇 J?",type:"number",answer:50,unit:"J",explain:"W = F × s = 10N × 5m = 50J"},
-  {part:"Part 4. 일",q:"질량 2kg인 물체를 4m 높이로 들어올렸다. 한 일은 몇 J?",type:"number",answer:78.4,unit:"J",hint:"들어올리는 힘 = 물체의 무게!",explain:"무게 = 2 × 9.8 = 19.6N\nW = 19.6N × 4m = 78.4J"},
-  {part:"Part 5. 위치에너지",q:"질량 1kg인 공이 5m 높이에 있다. 위치에너지는 몇 J?",type:"number",answer:49,unit:"J",explain:"무게 = 1 × 9.8 = 9.8N\n위치에너지 = 9.8 × 5 = 49J"},
-  {part:"Part 5. 위치에너지",q:"질량 3kg인 물체가 10m 높이에 있다. 위치에너지는 몇 J?",type:"number",answer:294,unit:"J",explain:"무게 = 3 × 9.8 = 29.4N\n위치에너지 = 29.4 × 10 = 294J"},
-  {part:"Part 5. 위치에너지",q:"위치에너지가 98J이고 질량이 2kg이면 몇 m 높이?",type:"number",answer:5,unit:"m",hint:"높이 = 위치에너지 ÷ 무게",explain:"무게 = 2 × 9.8 = 19.6N\n높이 = 98 ÷ 19.6 = 5m"},
-  {part:"Part 6. 서술형",q:"질량과 무게의 차이를 '달에서'의 상황을 예로 들어 설명하시오.\n(달의 중력가속도는 지구의 약 1/6)",type:"essay",explain:"질량은 물체의 고유한 양이라 지구든 달이든 변하지 않는다. 하지만 무게는 질량 × 중력가속도이므로 장소에 따라 달라진다.\n\n예: 질량 6kg인 물체\n· 지구: 6 × 9.8 = 58.8N\n· 달(중력 1/6): 약 9.8N\n\n질량은 그대로인데 무게만 달라진다!"}
+/* ═══════════════════ DATA ═══════════════════ */
+const QUESTIONS = [
+  // Part 1 – OX (각 2점)
+  {
+    id: 1, part: 'Part 1. O/X 퀴즈', type: 'ox', score: 2,
+    text: '질량은 지구, 달, 화성 어디에서나 같다.',
+    answer: 'O',
+    explanation: '질량은 물체 자체의 물질의 양으로, 위치에 상관없이 항상 일정합니다.'
+  },
+  {
+    id: 2, part: 'Part 1. O/X 퀴즈', type: 'ox', score: 2,
+    text: '무게의 단위는 kg이다.',
+    answer: 'X',
+    explanation: 'kg은 질량의 단위입니다. 무게의 단위는 N(뉴턴)입니다.'
+  },
+  {
+    id: 3, part: 'Part 1. O/X 퀴즈', type: 'ox', score: 2,
+    text: '질량 1 kg인 물체의 지구에서의 무게는 9.8 N이다.',
+    answer: 'O',
+    explanation: '무게 = 1 kg × 9.8 = 9.8 N'
+  },
+  {
+    id: 4, part: 'Part 1. O/X 퀴즈', type: 'ox', score: 2,
+    text: 'W, F, s는 각각 일, 힘, 거리의 "단위"이다.',
+    answer: 'X',
+    explanation: 'W(Work), F(Force), s(distance)는 물리량의 이름(기호)입니다. 단위는 각각 J, N, m입니다.'
+  },
+  {
+    id: 5, part: 'Part 1. O/X 퀴즈', type: 'ox', score: 2,
+    text: '1 N의 힘으로 1 m를 이동시키면 한 일은 1 J이다.',
+    answer: 'O',
+    explanation: 'W = F × s = 1 N × 1 m = 1 J'
+  },
+  // Part 2 – MC (각 2점)
+  {
+    id: 6, part: 'Part 2. 객관식', type: 'mc', score: 2,
+    text: '질량의 단위는 무엇인가요?',
+    choices: ['N', 'kg', 'J', 'm'],
+    answer: 'kg',
+    explanation: '질량의 단위는 kg(킬로그램)입니다. N은 힘(무게), J는 일, m은 거리의 단위입니다.'
+  },
+  {
+    id: 7, part: 'Part 2. 객관식', type: 'mc', score: 2,
+    text: '무게의 단위는 무엇인가요?',
+    choices: ['kg', 'm', 'N', 'J'],
+    answer: 'N',
+    explanation: '무게는 중력에 의한 힘이므로 단위는 N(뉴턴)입니다.'
+  },
+  {
+    id: 8, part: 'Part 2. 객관식', type: 'mc', score: 2,
+    text: '일(Work)의 단위는 무엇인가요?',
+    choices: ['W', 'N', 'm', 'J'],
+    answer: 'J',
+    explanation: 'J(줄, Joule)이 일의 단위입니다. W는 일의 이름(기호)이지 단위가 아닙니다!'
+  },
+  // Part 3 – 무게 계산 (각 3점)
+  {
+    id: 9, part: 'Part 3. 계산 (무게)', type: 'num', score: 3,
+    text: '질량 2 kg인 물체의 무게는 몇 N인가요?',
+    unit: 'N', answer: 19.6,
+    explanation: '무게 = 2 kg × 9.8 = 19.6 N'
+  },
+  {
+    id: 10, part: 'Part 3. 계산 (무게)', type: 'num', score: 3,
+    text: '질량 5 kg인 물체의 무게는 몇 N인가요?',
+    unit: 'N', answer: 49,
+    explanation: '무게 = 5 kg × 9.8 = 49 N'
+  },
+  // Part 4 – 일 계산 (각 3점)
+  {
+    id: 11, part: 'Part 4. 계산 (일)', type: 'num', score: 3,
+    text: '10 N의 힘으로 물체를 5 m 이동시켰다. 한 일은 몇 J인가요?',
+    unit: 'J', answer: 50,
+    explanation: 'W = F × s = 10 N × 5 m = 50 J'
+  },
+  {
+    id: 12, part: 'Part 4. 계산 (일)', type: 'num', score: 3,
+    hint: '💡 들어올리는 힘 = 물체의 무게!',
+    text: '질량 2 kg인 물체를 4 m 높이로 들어올렸다. 한 일은 몇 J인가요?',
+    unit: 'J', answer: 78.4,
+    explanation: '무게 = 2 × 9.8 = 19.6 N\nW = 19.6 N × 4 m = 78.4 J'
+  },
+  // Part 5 – 위치에너지 계산 (각 4점)
+  {
+    id: 13, part: 'Part 5. 계산 (위치에너지)', type: 'num', score: 4,
+    text: '질량 1 kg인 공이 5 m 높이에 있다. 위치에너지는 몇 J인가요?',
+    unit: 'J', answer: 49,
+    explanation: '무게 = 1 × 9.8 = 9.8 N\n위치에너지 = 9.8 N × 5 m = 49 J'
+  },
+  {
+    id: 14, part: 'Part 5. 계산 (위치에너지)', type: 'num', score: 4,
+    text: '질량 3 kg인 물체가 10 m 높이에 있다. 위치에너지는 몇 J인가요?',
+    unit: 'J', answer: 294,
+    explanation: '무게 = 3 × 9.8 = 29.4 N\n위치에너지 = 29.4 N × 10 m = 294 J'
+  },
+  {
+    id: 15, part: 'Part 5. 계산 (위치에너지)', type: 'num', score: 4,
+    hint: '💡 높이 = 위치에너지 ÷ 무게',
+    text: '위치에너지가 98 J이고 질량이 2 kg일 때, 몇 m 높이에 있는가?',
+    unit: 'm', answer: 5,
+    explanation: '무게 = 2 × 9.8 = 19.6 N\n높이 = 98 J ÷ 19.6 N = 5 m'
+  },
 ];
 
-var currentList = [];
-var currentIndex = 0;
-var score = 0;
-var wrongList = [];
-var answered = false;
+const TOTAL_SCORE = QUESTIONS.reduce((s, q) => s + q.score, 0);
 
-function init(list) {
-  currentList = list;
-  currentIndex = 0;
-  score = 0;
-  wrongList = [];
-  answered = false;
-  document.getElementById('quizScreen').classList.remove('hidden');
-  document.getElementById('resultScreen').classList.remove('show');
-  renderQuestion();
+/* ═══════════════════ STATE ═══════════════════ */
+let state = {
+  answers: {},
+  answered: new Set(),
+  score: 0,
+  activeIds: [],
+};
+
+/* ═══════════════════ INIT ═══════════════════ */
+function init(ids) {
+  state = { answers: {}, answered: new Set(), score: 0, activeIds: ids };
+
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+
+  let lastPart = '';
+  QUESTIONS.filter(q => ids.includes(q.id)).forEach(q => {
+    if (q.part !== lastPart) {
+      lastPart = q.part;
+      const label = document.createElement('div');
+      label.className = 'part-label';
+      label.textContent = q.part;
+      container.appendChild(label);
+    }
+    container.appendChild(buildCard(q));
+  });
+
+  updateProgress();
 }
 
-function renderQuestion() {
-  answered = false;
-  var q = currentList[currentIndex];
-  var total = currentList.length;
+/* ═══════════════════ BUILD CARD ═══════════════════ */
+function buildCard(q) {
+  const card = document.createElement('div');
+  card.className = 'q-card';
+  card.id = 'card-' + q.id;
 
-  document.getElementById('progressText').textContent = (currentIndex + 1) + ' / ' + total;
-  document.getElementById('scoreText').textContent = '점수: ' + score + '점';
-  document.getElementById('progressFill').style.width = (currentIndex / total * 100) + '%';
-  document.getElementById('partLabel').textContent = q.part;
-  document.getElementById('questionText').textContent = q.q;
-
-  var hintEl = document.getElementById('hintText');
-  if (q.hint) {
-    hintEl.textContent = '💡 힌트: ' + q.hint;
-    hintEl.style.display = 'block';
-  } else {
-    hintEl.style.display = 'none';
-  }
-
-  document.getElementById('feedbackArea').innerHTML = '';
-  document.getElementById('nextBtn').style.display = 'none';
-
-  var area = document.getElementById('answerArea');
-  area.innerHTML = '';
+  let html = '<div class="q-num">문제 ' + q.id + '</div>';
+  html += '<div class="q-score-badge">' + q.score + '점</div>';
+  html += '<div class="q-text">' + q.text + '</div>';
+  if (q.hint) html += '<div class="q-hint">' + q.hint + '</div>';
 
   if (q.type === 'ox') {
-    area.innerHTML =
-      '<div class="ox-wrap">' +
-      '<button class="ox-btn" onclick="checkOX(\'O\', this)" id="btnO">⭕</button>' +
-      '<button class="ox-btn" onclick="checkOX(\'X\', this)" id="btnX">❌</button>' +
-      '</div>';
-  } else if (q.type === 'choice') {
-    var html = '<div class="choice-wrap">';
-    q.options.forEach(function(opt) {
-      html += '<button class="choice-btn" onclick="checkChoice(\'' + opt + '\', this)">' + opt + '</button>';
+    html += '<div class="ox-wrap">'
+      + '<button class="ox-btn" id="ox-O-' + q.id + '" onclick="answerOX(' + q.id + ',\'O\')">⭕</button>'
+      + '<button class="ox-btn" id="ox-X-' + q.id + '" onclick="answerOX(' + q.id + ',\'X\')">❌</button>'
+      + '</div>';
+  } else if (q.type === 'mc') {
+    const letters = ['①','②','③','④'];
+    html += '<div class="mc-wrap">';
+    q.choices.forEach(function(c, i) {
+      html += '<button class="mc-btn" id="mc-' + q.id + '-' + i + '" onclick="answerMC(' + q.id + ',' + i + ')">'
+        + '<span class="mc-letter">' + letters[i] + '</span>' + c + '</button>';
     });
     html += '</div>';
-    area.innerHTML = html;
-  } else if (q.type === 'number') {
-    area.innerHTML =
-      '<div class="number-wrap">' +
-      '<input type="number" class="number-input" id="numInput" placeholder="숫자 입력" inputmode="decimal">' +
-      '<span class="unit-label">' + (q.unit || '') + '</span>' +
-      '<button class="confirm-btn" onclick="checkNumber()">확인</button>' +
-      '</div>';
-    var inp = document.getElementById('numInput');
-    inp.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') checkNumber();
-    });
-  } else if (q.type === 'essay') {
-    area.innerHTML =
-      '<div class="essay-wrap">' +
-      '<textarea class="essay-input" id="essayInput" placeholder="여기에 답을 작성하세요..."></textarea>' +
-      '<button class="essay-confirm-btn" onclick="checkEssay()">정답 확인</button>' +
-      '</div>';
-  }
-}
-
-function showFeedback(isCorrect, explain, isEssay) {
-  answered = true;
-  var fb = document.getElementById('feedbackArea');
-  if (isEssay) {
-    fb.innerHTML =
-      '<div class="feedback essay">' +
-      '<span class="feedback-icon">📝</span>' +
-      '<div class="feedback-title">예시 답안</div>' +
-      explain +
-      '</div>';
-  } else if (isCorrect) {
-    fb.innerHTML =
-      '<div class="feedback correct">' +
-      '<span class="feedback-icon">✅</span>' +
-      '<div class="feedback-title">정답입니다!</div>' +
-      explain +
-      '</div>';
   } else {
-    var q = currentList[currentIndex];
-    var answerStr = '';
-    if (q.type === 'number') answerStr = '정답: ' + q.answer + (q.unit ? ' ' + q.unit : '') + '\n\n';
-    else if (q.type === 'ox' || q.type === 'choice') answerStr = '정답: ' + q.answer + '\n\n';
-    fb.innerHTML =
-      '<div class="feedback wrong">' +
-      '<span class="feedback-icon">❌</span>' +
-      '<div class="feedback-title">틀렸어요</div>' +
-      answerStr + explain +
-      '</div>';
+    html += '<div class="num-wrap">'
+      + '<input class="num-input" type="number" inputmode="decimal" id="num-' + q.id + '" placeholder="숫자 입력"'
+      + ' onkeydown="if(event.key===\'Enter\')submitNum(' + q.id + ')" />'
+      + '<span class="num-unit">' + q.unit + '</span>'
+      + '<button class="submit-btn" id="sub-' + q.id + '" onclick="submitNum(' + q.id + ')">확인</button>'
+      + '</div>';
   }
-  document.getElementById('nextBtn').style.display = 'block';
-  var lastQ = currentIndex === currentList.length - 1;
-  document.getElementById('nextBtn').textContent = lastQ ? '결과 보기 →' : '다음 문제 →';
+
+  html += '<div class="feedback" id="fb-' + q.id + '"></div>';
+  card.innerHTML = html;
+  return card;
 }
 
-function checkOX(selected, btn) {
-  if (answered) return;
-  var q = currentList[currentIndex];
-  var isCorrect = selected === q.answer;
-  if (isCorrect) {
-    btn.classList.add('selected-correct');
-    score++;
+/* ═══════════════════ ANSWER HANDLERS ═══════════════════ */
+function answerOX(id, choice) {
+  if (state.answered.has(id)) return;
+  const q = QUESTIONS.find(function(x){ return x.id === id; });
+  const correct = (choice === q.answer);
+  recordAnswer(id, correct, choice);
+
+  var btnO = document.getElementById('ox-O-' + id);
+  var btnX = document.getElementById('ox-X-' + id);
+  btnO.disabled = true;
+  btnX.disabled = true;
+
+  if (correct) {
+    document.getElementById('ox-' + choice + '-' + id).classList.add('selected-correct');
   } else {
-    btn.classList.add('selected-wrong');
-    var otherId = selected === 'O' ? 'btnX' : 'btnO';
-    document.getElementById(otherId).classList.add('selected-correct');
-    wrongList.push(currentIndex);
+    document.getElementById('ox-' + choice + '-' + id).classList.add('selected-wrong');
+    document.getElementById('ox-' + q.answer + '-' + id).classList.add('correct-highlight');
   }
-  disableOX();
-  showFeedback(isCorrect, q.explain, false);
+  showFeedback(id, correct, q.answer, q.explanation);
 }
 
-function disableOX() {
-  var btns = document.querySelectorAll('.ox-btn');
-  btns.forEach(function(b) { b.onclick = null; b.style.cursor = 'default'; });
-}
+function answerMC(id, idx) {
+  if (state.answered.has(id)) return;
+  const q = QUESTIONS.find(function(x){ return x.id === id; });
+  const choice = q.choices[idx];
+  const correct = (choice === q.answer);
+  recordAnswer(id, correct, choice);
 
-function checkChoice(selected, btn) {
-  if (answered) return;
-  var q = currentList[currentIndex];
-  var isCorrect = selected === q.answer;
-  var btns = document.querySelectorAll('.choice-btn');
-  btns.forEach(function(b) {
-    b.onclick = null;
-    b.style.cursor = 'default';
-    if (b.textContent === q.answer) b.classList.add('show-answer');
+  q.choices.forEach(function(c, i) {
+    var btn = document.getElementById('mc-' + id + '-' + i);
+    btn.disabled = true;
+    if (i === idx) btn.classList.add(correct ? 'selected-correct' : 'selected-wrong');
+    if (!correct && c === q.answer) btn.classList.add('correct-highlight');
   });
-  if (isCorrect) {
-    btn.classList.add('correct');
-    score++;
-  } else {
-    btn.classList.add('wrong');
-    wrongList.push(currentIndex);
-  }
-  showFeedback(isCorrect, q.explain, false);
+  showFeedback(id, correct, q.answer, q.explanation);
 }
 
-function checkNumber() {
-  if (answered) return;
-  var q = currentList[currentIndex];
-  var inp = document.getElementById('numInput');
-  var val = parseFloat(inp.value);
-  if (isNaN(val)) { inp.focus(); return; }
-  var isCorrect = Math.abs(val - q.answer) < 0.5;
-  inp.disabled = true;
-  document.querySelector('.confirm-btn').disabled = true;
-  if (isCorrect) {
-    inp.classList.add('correct');
-    score++;
-  } else {
-    inp.classList.add('wrong');
-    wrongList.push(currentIndex);
-  }
-  showFeedback(isCorrect, q.explain, false);
+function submitNum(id) {
+  if (state.answered.has(id)) return;
+  const q = QUESTIONS.find(function(x){ return x.id === id; });
+  const input = document.getElementById('num-' + id);
+  const raw = input.value.trim();
+  if (!raw) { input.focus(); return; }
+
+  const val = parseFloat(raw);
+  const correct = (Math.abs(val - q.answer) < 0.001);
+  recordAnswer(id, correct, raw);
+
+  input.disabled = true;
+  input.classList.add(correct ? 'correct' : 'wrong');
+  document.getElementById('sub-' + id).disabled = true;
+  showFeedback(id, correct, q.answer + ' ' + q.unit, q.explanation);
 }
 
-function checkEssay() {
-  if (answered) return;
-  var q = currentList[currentIndex];
-  document.getElementById('essayInput').disabled = true;
-  document.querySelector('.essay-confirm-btn').disabled = true;
-  showFeedback(false, q.explain, true);
-}
+/* ═══════════════════ HELPERS ═══════════════════ */
+function recordAnswer(id, correct, userAnswer) {
+  state.answered.add(id);
+  state.answers[id] = { correct: correct, userAnswer: userAnswer };
+  if (correct) state.score += QUESTIONS.find(function(q){ return q.id === id; }).score;
 
-function nextQuestion() {
-  currentIndex++;
-  if (currentIndex >= currentList.length) {
-    showResult();
-  } else {
-    renderQuestion();
-    window.scrollTo(0, 0);
+  document.getElementById('card-' + id).classList.add(correct ? 'answered-correct' : 'answered-wrong');
+  updateProgress();
+
+  if (state.answered.size === state.activeIds.length) {
+    setTimeout(showResult, 800);
   }
 }
 
+function showFeedback(id, correct, answer, explanation) {
+  const fb = document.getElementById('fb-' + id);
+  fb.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
+  if (correct) {
+    fb.innerHTML = '<div class="fb-title">✅ 정답!</div><div>' + explanation.replace(/\n/g,'<br>') + '</div>';
+  } else {
+    fb.innerHTML = '<div class="fb-title">❌ 틀렸어요</div>'
+      + '<div class="fb-answer">정답: ' + answer + '</div>'
+      + '<div style="margin-top:4px">' + explanation.replace(/\n/g,'<br>') + '</div>';
+  }
+  setTimeout(function(){ fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
+}
+
+function updateProgress() {
+  const done = state.answered.size;
+  const total = state.activeIds.length;
+  const pct = total ? (done / total * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = done + ' / ' + total + ' 완료';
+  document.getElementById('score-text').textContent = state.score + '점';
+}
+
+/* ═══════════════════ RESULT ═══════════════════ */
 function showResult() {
-  document.getElementById('quizScreen').classList.add('hidden');
-  var rs = document.getElementById('resultScreen');
-  rs.classList.add('show');
+  const maxScore = state.activeIds.reduce(function(s, id) {
+    return s + QUESTIONS.find(function(q){ return q.id === id; }).score;
+  }, 0);
 
-  var scored = currentList.filter(function(q) { return q.type !== 'essay'; }).length;
-  var pct = scored > 0 ? Math.round(score / scored * 100) : 0;
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
 
-  var emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '💪' : '😅';
-  document.getElementById('resultEmoji').textContent = emoji;
-  document.getElementById('resultScore').textContent = score + ' / ' + scored + ' 점';
-  document.getElementById('resultPercent').textContent = pct + '% 정답률';
+  document.getElementById('r-score').textContent = state.score;
+  document.getElementById('r-max').textContent = '/ ' + maxScore + '점';
 
-  // 틀린 문제 해설
-  var section = document.getElementById('wrongReviewSection');
-  if (wrongList.length === 0) {
-    section.innerHTML = '<div style="text-align:center;color:#10b981;font-weight:700;font-size:15px;padding:16px 0;">🎊 모두 맞혔어요!</div>';
-    document.getElementById('wrongOnlyBtn').style.display = 'none';
+  const pct = Math.round(state.score / maxScore * 100);
+  let grade, sub;
+  if      (pct === 100) { grade = '🏆 만점! 완벽해요!';     sub = '모든 문제를 맞혔습니다!'; }
+  else if (pct >= 80)   { grade = '😊 우수!';               sub = '조금만 더 복습하면 완벽!'; }
+  else if (pct >= 60)   { grade = '🙂 보통';                sub = '틀린 문제를 다시 풀어봐요'; }
+  else                  { grade = '😅 분발 필요!';           sub = '공식을 다시 확인해봐요'; }
+
+  document.getElementById('r-grade').textContent = grade;
+  document.getElementById('r-sub').textContent = sub;
+
+  const wrongIds = state.activeIds.filter(function(id){ return state.answers[id] && !state.answers[id].correct; });
+  const wrongList = document.getElementById('wrong-list');
+  const wrongSection = document.getElementById('wrong-section');
+  wrongList.innerHTML = '';
+
+  if (wrongIds.length === 0) {
+    wrongSection.innerHTML = '<div class="all-correct-banner">🎉 모든 문제 정답! 훌륭해요!</div>';
+    document.getElementById('retry-wrong-btn').style.display = 'none';
   } else {
-    var html = '<div class="wrong-review-title">📋 틀린 문제 해설 (' + wrongList.length + '개)</div>';
-    wrongList.forEach(function(idx) {
-      var q = currentList[idx];
-      var ansStr = '';
-      if (q.type === 'number') ansStr = q.answer + (q.unit ? ' ' + q.unit : '');
-      else if (q.type === 'ox' || q.type === 'choice') ansStr = q.answer;
-      html +=
-        '<div class="wrong-review-card">' +
-        '<div class="part">' + q.part + '</div>' +
-        '<div class="q">' + q.q + '</div>' +
-        (ansStr ? '<div class="ans">정답: ' + ansStr + '</div>' : '') +
-        '<div class="exp">' + q.explain + '</div>' +
-        '</div>';
+    document.getElementById('retry-wrong-btn').style.display = '';
+    wrongSection.querySelector('.result-section-title') || wrongSection.insertAdjacentHTML('afterbegin','<div class="result-section-title">❌ 틀린 문제 해설</div>');
+    wrongIds.forEach(function(id) {
+      const q = QUESTIONS.find(function(x){ return x.id === id; });
+      const ua = state.answers[id].userAnswer;
+      const div = document.createElement('div');
+      div.className = 'wrong-card';
+      div.innerHTML = '<div class="wc-num">문제 ' + q.id + ' (' + q.score + '점)</div>'
+        + '<div class="wc-q">' + q.text + '</div>'
+        + '<div class="wc-mine">내 답: ' + ua + '</div>'
+        + '<div class="wc-ans">정답: ' + (q.type === 'num' ? q.answer + ' ' + q.unit : q.answer) + '</div>'
+        + '<div class="wc-exp">' + q.explanation.replace(/\n/g,'<br>') + '</div>';
+      wrongList.appendChild(div);
     });
-    section.innerHTML = html;
   }
-
   window.scrollTo(0, 0);
 }
 
+/* ═══════════════════ ACTIONS ═══════════════════ */
 function restartAll() {
-  init(questions);
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  // restore wrong-section markup
+  document.getElementById('wrong-section').innerHTML =
+    '<div class="result-section-title">❌ 틀린 문제 해설</div><div id="wrong-list"></div>';
+  document.getElementById('retry-wrong-btn').style.display = '';
+  init(QUESTIONS.map(function(q){ return q.id; }));
+  window.scrollTo(0, 0);
 }
 
-function restartWrong() {
-  if (wrongList.length === 0) return;
-  var wqs = wrongList.map(function(i) { return currentList[i]; });
-  init(wqs);
+function retryWrong() {
+  const wrongIds = state.activeIds.filter(function(id){ return state.answers[id] && !state.answers[id].correct; });
+  if (!wrongIds.length) return;
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('wrong-section').innerHTML =
+    '<div class="result-section-title">❌ 틀린 문제 해설</div><div id="wrong-list"></div>';
+  document.getElementById('retry-wrong-btn').style.display = '';
+  init(wrongIds);
+  window.scrollTo(0, 0);
 }
 
-// 시작
-init(questions);
+/* ═══════════════════ REF TOGGLE ═══════════════════ */
+function toggleRef() {
+  const toggle  = document.getElementById('ref-toggle');
+  const content = document.getElementById('ref-content');
+  toggle.classList.toggle('collapsed');
+  content.classList.toggle('collapsed');
+}
+
+/* ═══════════════════ START ═══════════════════ */
+init(QUESTIONS.map(function(q){ return q.id; }));
 </script>
 </body>
 </html>
