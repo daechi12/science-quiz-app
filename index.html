@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>중3 과학 위치에너지 퀴즈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #f0f4f8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    padding-bottom: 40px;
+  }
+  .app {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  /* 공식 참고란 */
+  .formula-box {
+    background: #fff;
+    border: 2px solid #6366f1;
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+  }
+  .formula-box h3 {
+    font-size: 13px;
+    color: #6366f1;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+  .formula-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 12px;
+  }
+  .formula-item {
+    font-size: 12px;
+    color: #374151;
+    line-height: 1.6;
+  }
+  .formula-item span {
+    color: #6366f1;
+    font-weight: 700;
+  }
+
+  /* 진행 바 */
+  .progress-wrap {
+    margin-bottom: 14px;
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  /* 카드 */
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 14px;
+  }
+  .part-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #8b5cf6;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .question-text {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.6;
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+  }
+  .hint-text {
+    font-size: 13px;
+    color: #f59e0b;
+    background: #fffbeb;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+
+  /* OX 버튼 */
+  .ox-wrap {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .ox-btn {
+    flex: 1;
+    height: 64px;
+    border: 2.5px solid #e5e7eb;
+    border-radius: 14px;
+    font-size: 32px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ox-btn:active { transform: scale(0.96); }
+  .ox-btn.selected-correct { border-color: #10b981; background: #ecfdf5; }
+  .ox-btn.selected-wrong { border-color: #ef4444; background: #fef2f2; }
+
+  /* 객관식 */
+  .choice-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .choice-btn {
+    min-height: 52px;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 500;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    color: #111827;
+  }
+  .choice-btn:active { transform: scale(0.98); }
+  .choice-btn.correct { border-color: #10b981; background: #ecfdf5; color: #065f46; }
+  .choice-btn.wrong { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+  .choice-btn.show-answer { border-color: #10b981; background: #ecfdf5; color: #065f46; }
+
+  /* 숫자 입력 */
+  .number-wrap {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .number-input {
+    flex: 1;
+    height: 52px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 18px;
+    font-family: 'Noto Sans KR', sans-serif;
+    text-align: center;
+    color: #111827;
+    outline: none;
+    transition: border-color 0.15s;
+    padding: 0 12px;
+  }
+  .number-input:focus { border-color: #6366f1; }
+  .number-input.correct { border-color: #10b981; background: #ecfdf5; }
+  .number-input.wrong { border-color: #ef4444; background: #fef2f2; }
+  .unit-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #6b7280;
+    min-width: 28px;
+  }
+  .confirm-btn {
+    min-height: 52px;
+    padding: 0 20px;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s;
+  }
+  .confirm-btn:active { background: #4f46e5; }
+
+  /* 서술형 */
+  .essay-wrap {
+    margin-top: 16px;
+  }
+  .essay-input {
+    width: 100%;
+    min-height: 100px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #111827;
+    outline: none;
+    resize: none;
+    transition: border-color 0.15s;
+  }
+  .essay-input:focus { border-color: #6366f1; }
+  .essay-confirm-btn {
+    margin-top: 10px;
+    width: 100%;
+    min-height: 52px;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 피드백 */
+  .feedback {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+  .feedback.correct {
+    background: #ecfdf5;
+    border: 1.5px solid #10b981;
+    color: #065f46;
+  }
+  .feedback.wrong {
+    background: #fef2f2;
+    border: 1.5px solid #ef4444;
+    color: #991b1b;
+  }
+  .feedback.essay {
+    background: #f0f9ff;
+    border: 1.5px solid #38bdf8;
+    color: #075985;
+  }
+  .feedback-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+    display: block;
+  }
+  .feedback-title {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  /* 다음 버튼 */
+  .next-btn {
+    width: 100%;
+    min-height: 52px;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 12px;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s;
+  }
+  .next-btn:active { background: #4f46e5; }
+
+  /* 결과 화면 */
+  .result-screen {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .result-screen.show { display: flex; }
+  .result-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .result-emoji { font-size: 56px; margin-bottom: 10px; }
+  .result-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 6px; }
+  .result-score { font-size: 40px; font-weight: 700; color: #6366f1; margin-bottom: 4px; }
+  .result-percent { font-size: 16px; color: #6b7280; }
+  .result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .result-btn {
+    width: 100%;
+    min-height: 52px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .result-btn.primary { background: #6366f1; color: #fff; }
+  .result-btn.secondary { background: #fff; border: 2px solid #6366f1; color: #6366f1; }
+  .wrong-review-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 2px;
+  }
+  .wrong-review-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid #ef4444;
+  }
+  .wrong-review-card .part { font-size: 11px; color: #8b5cf6; font-weight: 700; margin-bottom: 6px; }
+  .wrong-review-card .q { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 8px; white-space: pre-wrap; }
+  .wrong-review-card .ans { font-size: 13px; color: #10b981; font-weight: 700; margin-bottom: 6px; }
+  .wrong-review-card .exp { font-size: 13px; color: #374151; line-height: 1.7; white-space: pre-wrap; background: #f9fafb; border-radius: 8px; padding: 10px; }
+
+  .quiz-screen { display: flex; flex-direction: column; }
+  .quiz-screen.hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 퀴즈 화면 -->
+  <div class="quiz-screen" id="quizScreen">
+
+    <!-- 공식 참고란 -->
+    <div class="formula-box">
+      <h3>📐 공식 참고란</h3>
+      <div class="formula-grid">
+        <div class="formula-item">무게 = 질량 × <span>9.8</span> [N]</div>
+        <div class="formula-item">일 <span>W</span> = F × s [J]</div>
+        <div class="formula-item">위치에너지 = 무게 × 높이</div>
+        <div class="formula-item">= 질량 × 9.8 × h [J]</div>
+      </div>
+    </div>
+
+    <!-- 진행 바 -->
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="progressText">1 / 16</span>
+        <span id="scoreText">점수: 0점</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- 문제 카드 -->
+    <div class="card" id="questionCard">
+      <div class="part-label" id="partLabel"></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="hint-text" id="hintText" style="display:none"></div>
+      <div id="answerArea"></div>
+      <div id="feedbackArea"></div>
+      <button class="next-btn" id="nextBtn" style="display:none" onclick="nextQuestion()">다음 문제 →</button>
+    </div>
+
+  </div>
+
+  <!-- 결과 화면 -->
+  <div class="result-screen" id="resultScreen">
+    <div class="result-card">
+      <div class="result-emoji" id="resultEmoji"></div>
+      <div class="result-title">퀴즈 완료!</div>
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-percent" id="resultPercent"></div>
+    </div>
+    <div class="result-actions">
+      <button class="result-btn primary" onclick="restartAll()">처음부터 다시</button>
+      <button class="result-btn secondary" id="wrongOnlyBtn" onclick="restartWrong()">틀린 문제만 다시</button>
+    </div>
+    <div id="wrongReviewSection"></div>
+  </div>
+
+</div>
+
+<script>
+var questions = [
+  {part:"Part 1. O/X",q:"질량은 지구, 달, 화성 어디에서나 같다.",type:"ox",answer:"O",explain:"질량은 물체의 고유한 물질의 양이라 위치에 상관없이 일정해요."},
+  {part:"Part 1. O/X",q:"무게의 단위는 kg이다.",type:"ox",answer:"X",explain:"kg은 질량의 단위예요. 무게의 단위는 N(뉴턴)입니다."},
+  {part:"Part 1. O/X",q:"질량 1kg인 물체의 지구에서의 무게는 9.8N이다.",type:"ox",answer:"O",explain:"무게 = 질량 × 중력가속도 = 1 × 9.8 = 9.8N"},
+  {part:"Part 1. O/X",q:"W, F, s는 각각 일, 힘, 거리의 '단위'이다.",type:"ox",answer:"X",explain:"W, F, s는 이름(Work, Force, Distance)이에요!\n단위는 각각 J, N, m입니다."},
+  {part:"Part 1. O/X",q:"1N의 힘으로 1m를 이동시키면 한 일은 1J이다.",type:"ox",answer:"O",explain:"W = F × s = 1N × 1m = 1J"},
+  {part:"Part 2. 단위",q:"질량의 단위는?",type:"choice",options:["N","kg","J","m"],answer:"kg",explain:"질량의 단위는 kg(킬로그램)입니다."},
+  {part:"Part 2. 단위",q:"무게의 단위는?",type:"choice",options:["kg","m","N","J"],answer:"N",explain:"무게 = 질량 × 중력가속도, 단위는 N(뉴턴)"},
+  {part:"Part 2. 단위",q:"일(Work)의 단위는?",type:"choice",options:["W","N","m","J"],answer:"J",explain:"일의 단위는 J(줄)이에요. W는 이름이지 단위가 아닙니다!"},
+  {part:"Part 3. 무게",q:"질량 2kg인 물체의 무게는 몇 N?",type:"number",answer:19.6,unit:"N",explain:"무게 = 2kg × 9.8 = 19.6N"},
+  {part:"Part 3. 무게",q:"질량 5kg인 물체의 무게는 몇 N?",type:"number",answer:49,unit:"N",explain:"무게 = 5kg × 9.8 = 49N"},
+  {part:"Part 4. 일",q:"10N의 힘으로 물체를 5m 이동시켰다. 한 일은 몇 J?",type:"number",answer:50,unit:"J",explain:"W = F × s = 10N × 5m = 50J"},
+  {part:"Part 4. 일",q:"질량 2kg인 물체를 4m 높이로 들어올렸다. 한 일은 몇 J?",type:"number",answer:78.4,unit:"J",hint:"들어올리는 힘 = 물체의 무게!",explain:"무게 = 2 × 9.8 = 19.6N\nW = 19.6N × 4m = 78.4J"},
+  {part:"Part 5. 위치에너지",q:"질량 1kg인 공이 5m 높이에 있다. 위치에너지는 몇 J?",type:"number",answer:49,unit:"J",explain:"무게 = 1 × 9.8 = 9.8N\n위치에너지 = 9.8 × 5 = 49J"},
+  {part:"Part 5. 위치에너지",q:"질량 3kg인 물체가 10m 높이에 있다. 위치에너지는 몇 J?",type:"number",answer:294,unit:"J",explain:"무게 = 3 × 9.8 = 29.4N\n위치에너지 = 29.4 × 10 = 294J"},
+  {part:"Part 5. 위치에너지",q:"위치에너지가 98J이고 질량이 2kg이면 몇 m 높이?",type:"number",answer:5,unit:"m",hint:"높이 = 위치에너지 ÷ 무게",explain:"무게 = 2 × 9.8 = 19.6N\n높이 = 98 ÷ 19.6 = 5m"},
+  {part:"Part 6. 서술형",q:"질량과 무게의 차이를 '달에서'의 상황을 예로 들어 설명하시오.\n(달의 중력가속도는 지구의 약 1/6)",type:"essay",explain:"질량은 물체의 고유한 양이라 지구든 달이든 변하지 않는다. 하지만 무게는 질량 × 중력가속도이므로 장소에 따라 달라진다.\n\n예: 질량 6kg인 물체\n· 지구: 6 × 9.8 = 58.8N\n· 달(중력 1/6): 약 9.8N\n\n질량은 그대로인데 무게만 달라진다!"}
+];
+
+var currentList = [];
+var currentIndex = 0;
+var score = 0;
+var wrongList = [];
+var answered = false;
+
+function init(list) {
+  currentList = list;
+  currentIndex = 0;
+  score = 0;
+  wrongList = [];
+  answered = false;
+  document.getElementById('quizScreen').classList.remove('hidden');
+  document.getElementById('resultScreen').classList.remove('show');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  var q = currentList[currentIndex];
+  var total = currentList.length;
+
+  document.getElementById('progressText').textContent = (currentIndex + 1) + ' / ' + total;
+  document.getElementById('scoreText').textContent = '점수: ' + score + '점';
+  document.getElementById('progressFill').style.width = (currentIndex / total * 100) + '%';
+  document.getElementById('partLabel').textContent = q.part;
+  document.getElementById('questionText').textContent = q.q;
+
+  var hintEl = document.getElementById('hintText');
+  if (q.hint) {
+    hintEl.textContent = '💡 힌트: ' + q.hint;
+    hintEl.style.display = 'block';
+  } else {
+    hintEl.style.display = 'none';
+  }
+
+  document.getElementById('feedbackArea').innerHTML = '';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  var area = document.getElementById('answerArea');
+  area.innerHTML = '';
+
+  if (q.type === 'ox') {
+    area.innerHTML =
+      '<div class="ox-wrap">' +
+      '<button class="ox-btn" onclick="checkOX(\'O\', this)" id="btnO">⭕</button>' +
+      '<button class="ox-btn" onclick="checkOX(\'X\', this)" id="btnX">❌</button>' +
+      '</div>';
+  } else if (q.type === 'choice') {
+    var html = '<div class="choice-wrap">';
+    q.options.forEach(function(opt) {
+      html += '<button class="choice-btn" onclick="checkChoice(\'' + opt + '\', this)">' + opt + '</button>';
+    });
+    html += '</div>';
+    area.innerHTML = html;
+  } else if (q.type === 'number') {
+    area.innerHTML =
+      '<div class="number-wrap">' +
+      '<input type="number" class="number-input" id="numInput" placeholder="숫자 입력" inputmode="decimal">' +
+      '<span class="unit-label">' + (q.unit || '') + '</span>' +
+      '<button class="confirm-btn" onclick="checkNumber()">확인</button>' +
+      '</div>';
+    var inp = document.getElementById('numInput');
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') checkNumber();
+    });
+  } else if (q.type === 'essay') {
+    area.innerHTML =
+      '<div class="essay-wrap">' +
+      '<textarea class="essay-input" id="essayInput" placeholder="여기에 답을 작성하세요..."></textarea>' +
+      '<button class="essay-confirm-btn" onclick="checkEssay()">정답 확인</button>' +
+      '</div>';
+  }
+}
+
+function showFeedback(isCorrect, explain, isEssay) {
+  answered = true;
+  var fb = document.getElementById('feedbackArea');
+  if (isEssay) {
+    fb.innerHTML =
+      '<div class="feedback essay">' +
+      '<span class="feedback-icon">📝</span>' +
+      '<div class="feedback-title">예시 답안</div>' +
+      explain +
+      '</div>';
+  } else if (isCorrect) {
+    fb.innerHTML =
+      '<div class="feedback correct">' +
+      '<span class="feedback-icon">✅</span>' +
+      '<div class="feedback-title">정답입니다!</div>' +
+      explain +
+      '</div>';
+  } else {
+    var q = currentList[currentIndex];
+    var answerStr = '';
+    if (q.type === 'number') answerStr = '정답: ' + q.answer + (q.unit ? ' ' + q.unit : '') + '\n\n';
+    else if (q.type === 'ox' || q.type === 'choice') answerStr = '정답: ' + q.answer + '\n\n';
+    fb.innerHTML =
+      '<div class="feedback wrong">' +
+      '<span class="feedback-icon">❌</span>' +
+      '<div class="feedback-title">틀렸어요</div>' +
+      answerStr + explain +
+      '</div>';
+  }
+  document.getElementById('nextBtn').style.display = 'block';
+  var lastQ = currentIndex === currentList.length - 1;
+  document.getElementById('nextBtn').textContent = lastQ ? '결과 보기 →' : '다음 문제 →';
+}
+
+function checkOX(selected, btn) {
+  if (answered) return;
+  var q = currentList[currentIndex];
+  var isCorrect = selected === q.answer;
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    score++;
+  } else {
+    btn.classList.add('selected-wrong');
+    var otherId = selected === 'O' ? 'btnX' : 'btnO';
+    document.getElementById(otherId).classList.add('selected-correct');
+    wrongList.push(currentIndex);
+  }
+  disableOX();
+  showFeedback(isCorrect, q.explain, false);
+}
+
+function disableOX() {
+  var btns = document.querySelectorAll('.ox-btn');
+  btns.forEach(function(b) { b.onclick = null; b.style.cursor = 'default'; });
+}
+
+function checkChoice(selected, btn) {
+  if (answered) return;
+  var q = currentList[currentIndex];
+  var isCorrect = selected === q.answer;
+  var btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(function(b) {
+    b.onclick = null;
+    b.style.cursor = 'default';
+    if (b.textContent === q.answer) b.classList.add('show-answer');
+  });
+  if (isCorrect) {
+    btn.classList.add('correct');
+    score++;
+  } else {
+    btn.classList.add('wrong');
+    wrongList.push(currentIndex);
+  }
+  showFeedback(isCorrect, q.explain, false);
+}
+
+function checkNumber() {
+  if (answered) return;
+  var q = currentList[currentIndex];
+  var inp = document.getElementById('numInput');
+  var val = parseFloat(inp.value);
+  if (isNaN(val)) { inp.focus(); return; }
+  var isCorrect = Math.abs(val - q.answer) < 0.5;
+  inp.disabled = true;
+  document.querySelector('.confirm-btn').disabled = true;
+  if (isCorrect) {
+    inp.classList.add('correct');
+    score++;
+  } else {
+    inp.classList.add('wrong');
+    wrongList.push(currentIndex);
+  }
+  showFeedback(isCorrect, q.explain, false);
+}
+
+function checkEssay() {
+  if (answered) return;
+  var q = currentList[currentIndex];
+  document.getElementById('essayInput').disabled = true;
+  document.querySelector('.essay-confirm-btn').disabled = true;
+  showFeedback(false, q.explain, true);
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= currentList.length) {
+    showResult();
+  } else {
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+}
+
+function showResult() {
+  document.getElementById('quizScreen').classList.add('hidden');
+  var rs = document.getElementById('resultScreen');
+  rs.classList.add('show');
+
+  var scored = currentList.filter(function(q) { return q.type !== 'essay'; }).length;
+  var pct = scored > 0 ? Math.round(score / scored * 100) : 0;
+
+  var emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '💪' : '😅';
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultScore').textContent = score + ' / ' + scored + ' 점';
+  document.getElementById('resultPercent').textContent = pct + '% 정답률';
+
+  // 틀린 문제 해설
+  var section = document.getElementById('wrongReviewSection');
+  if (wrongList.length === 0) {
+    section.innerHTML = '<div style="text-align:center;color:#10b981;font-weight:700;font-size:15px;padding:16px 0;">🎊 모두 맞혔어요!</div>';
+    document.getElementById('wrongOnlyBtn').style.display = 'none';
+  } else {
+    var html = '<div class="wrong-review-title">📋 틀린 문제 해설 (' + wrongList.length + '개)</div>';
+    wrongList.forEach(function(idx) {
+      var q = currentList[idx];
+      var ansStr = '';
+      if (q.type === 'number') ansStr = q.answer + (q.unit ? ' ' + q.unit : '');
+      else if (q.type === 'ox' || q.type === 'choice') ansStr = q.answer;
+      html +=
+        '<div class="wrong-review-card">' +
+        '<div class="part">' + q.part + '</div>' +
+        '<div class="q">' + q.q + '</div>' +
+        (ansStr ? '<div class="ans">정답: ' + ansStr + '</div>' : '') +
+        '<div class="exp">' + q.explain + '</div>' +
+        '</div>';
+    });
+    section.innerHTML = html;
+  }
+
+  window.scrollTo(0, 0);
+}
+
+function restartAll() {
+  init(questions);
+}
+
+function restartWrong() {
+  if (wrongList.length === 0) return;
+  var wqs = wrongList.map(function(i) { return currentList[i]; });
+  init(wqs);
+}
+
+// 시작
+init(questions);
+</script>
+</body>
+</html>
