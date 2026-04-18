@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>타밀어 시험대비 퀴즈</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Sans+Tamil:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --error: #dc2626;
+      --error-bg: #fee2e2;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --sub: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Noto Sans Tamil', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 16px 20px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(79,70,229,.25);
+    }
+    header h1 { font-size: 17px; font-weight: 700; letter-spacing: -.3px; }
+    header p  { font-size: 12px; opacity: .8; margin-top: 2px; }
+
+    /* ── Progress ── */
+    .progress-wrap { padding: 0; margin-top: 10px; }
+    .progress-bar-bg {
+      height: 7px; background: rgba(255,255,255,.35);
+      border-radius: 99px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; background: #fff;
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: rgba(255,255,255,.85);
+      margin-top: 4px;
+    }
+
+    /* ── Main container ── */
+    main { padding: 16px; padding-bottom: 40px; }
+
+    /* ── Part label ── */
+    .part-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .6px;
+      text-transform: uppercase; color: var(--primary);
+      background: #ede9fe; border-radius: 99px;
+      display: inline-block; padding: 3px 10px;
+      margin-bottom: 8px; margin-top: 8px;
+    }
+
+    /* ── Question Card ── */
+    .q-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      border: 2px solid transparent;
+      transition: border-color .2s;
+    }
+    .q-card.answered-correct { border-color: var(--success); }
+    .q-card.answered-wrong   { border-color: var(--error); }
+
+    .q-num  { font-size: 11px; color: var(--sub); font-weight: 700; margin-bottom: 6px; }
+    .q-text {
+      font-size: 20px; font-weight: 500; line-height: 1.7; margin-bottom: 4px;
+      font-family: 'Noto Sans Tamil', 'Noto Sans KR', sans-serif;
+    }
+
+    /* ── MC Buttons ── */
+    .mc-wrap { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .mc-btn {
+      width: 100%; min-height: 54px;
+      text-align: left; padding: 12px 14px;
+      font-size: 18px;
+      font-family: 'Noto Sans Tamil', 'Noto Sans KR', sans-serif;
+      font-weight: 500;
+      border: 2px solid var(--border);
+      border-radius: 12px; background: #fff;
+      cursor: pointer; transition: all .15s;
+      display: flex; align-items: center; gap: 10px;
+      line-height: 1.5;
+    }
+    .mc-btn:active { transform: scale(.98); }
+    .mc-btn .mc-letter {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--bg); color: var(--primary);
+      font-size: 13px; font-weight: 700;
+      font-family: 'Noto Sans KR', sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .mc-btn.selected-correct { background: var(--success-bg); border-color: var(--success); }
+    .mc-btn.selected-wrong   { background: var(--error-bg);   border-color: var(--error); }
+    .mc-btn.correct-highlight { background: var(--success-bg); border-color: var(--success); }
+    .mc-btn:disabled { cursor: default; }
+
+    /* ── Feedback ── */
+    .feedback {
+      margin-top: 12px; padding: 12px 14px;
+      border-radius: 12px; font-size: 13px; line-height: 1.6;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.correct { background: var(--success-bg); color: #15803d; border: 1.5px solid #86efac; }
+    .feedback.wrong   { background: var(--error-bg);   color: #b91c1c; border: 1.5px solid #fca5a5; }
+    .feedback .fb-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .feedback .fb-answer {
+      font-weight: 700;
+      font-family: 'Noto Sans Tamil', 'Noto Sans KR', sans-serif;
+      font-size: 18px;
+    }
+    .feedback .fb-exp {
+      font-family: 'Noto Sans Tamil', 'Noto Sans KR', sans-serif;
+      font-size: 14px; margin-top: 4px;
+    }
+
+    /* ── Result Screen ── */
+    #result-screen { display: none; padding: 16px; padding-bottom: 60px; }
+    .result-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+      color: #fff; border-radius: 20px;
+      padding: 32px 24px; text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(79,70,229,.35);
+    }
+    .result-hero .score-num { font-size: 64px; font-weight: 900; line-height: 1; }
+    .result-hero .score-max { font-size: 18px; opacity: .8; }
+    .result-hero .result-grade { font-size: 22px; font-weight: 700; margin-top: 12px; }
+    .result-hero .result-sub   { font-size: 14px; opacity: .75; margin-top: 4px; }
+
+    .result-section-title {
+      font-size: 15px; font-weight: 700; color: var(--text);
+      margin: 20px 0 10px;
+    }
+    .wrong-card {
+      background: #fff; border-radius: 14px;
+      padding: 16px; margin-bottom: 12px;
+      border-left: 4px solid var(--error);
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .wrong-card .wc-num  { font-size: 11px; color: var(--error); font-weight: 700; margin-bottom: 4px; }
+    .wrong-card .wc-q    {
+      font-size: 18px; font-weight: 500; line-height: 1.6; margin-bottom: 6px;
+      font-family: 'Noto Sans Tamil', 'Noto Sans KR', sans-serif;
+    }
+    .wrong-card .wc-mine {
+      font-size: 16px; color: var(--error);
+      font-family: 'Noto Sans Tamil', 'Noto Sans KR', sans-serif;
+    }
+    .wrong-card .wc-ans  {
+      font-size: 16px; color: var(--success); font-weight: 700; margin-top: 2px;
+      font-family: 'Noto Sans Tamil', 'Noto Sans KR', sans-serif;
+    }
+    .wrong-card .wc-exp  {
+      font-size: 13px; color: var(--sub); margin-top: 6px; line-height: 1.6;
+      font-family: 'Noto Sans Tamil', 'Noto Sans KR', sans-serif;
+    }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+    .btn-primary {
+      flex: 1; height: 52px; background: var(--primary); color: #fff;
+      border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
+      font-family: inherit; cursor: pointer; transition: background .15s;
+    }
+    .btn-primary:active { background: #3730a3; }
+    .btn-secondary {
+      flex: 1; height: 52px; background: #fff; color: var(--primary);
+      border: 2px solid var(--primary); border-radius: 12px;
+      font-size: 15px; font-weight: 700; font-family: inherit;
+      cursor: pointer; transition: all .15s;
+    }
+    .btn-secondary:active { background: #ede9fe; }
+
+    .all-correct-banner {
+      text-align: center; padding: 20px;
+      font-size: 18px; font-weight: 700; color: var(--success);
+      background: var(--success-bg); border-radius: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════ QUIZ SCREEN ════════ -->
+<div id="quiz-screen">
+
+  <header>
+    <h1>தமிழ் · 타밀어 시험대비 퀴즈</h1>
+    <p>결합형 쓰기/분해 · 발음 규칙 · 인칭대명사 · 대화문 · 단어</p>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="progress-label">
+        <span id="progress-text">0 / 42 완료</span>
+        <span id="score-text">0점</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="questions-container"></div>
+  </main>
+</div>
+
+<!-- ════════ RESULT SCREEN ════════ -->
+<div id="result-screen">
+  <div class="result-hero">
+    <div class="score-num" id="r-score">0</div>
+    <div class="score-max" id="r-max">/ 42점</div>
+    <div class="result-grade" id="r-grade"></div>
+    <div class="result-sub"  id="r-sub"></div>
+  </div>
+
+  <div id="wrong-section">
+    <div class="result-section-title">❌ 틀린 문제 해설</div>
+    <div id="wrong-list"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-secondary" onclick="restartAll()">처음부터</button>
+    <button class="btn-primary" id="retry-wrong-btn" onclick="retryWrong()">틀린 문제만 다시</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════ DATA ═══════════════════ */
+var questions = [
+  // 유형 1: 결합형 쓰기 (4지선다)
+  {part:"유형1. 결합형 쓰기",q:"க் + ஆ = ?",type:"choice",options:["கா","கி","கு","கே"],answer:"கா",explain:"க்(ka) + ஆ(ā) = கா(kā)"},
+  {part:"유형1. 결합형 쓰기",q:"ப் + இ = ?",type:"choice",options:["பா","பி","பு","பே"],answer:"பி",explain:"ப்(pa) + இ(i) = பி(pi)"},
+  {part:"유형1. 결합형 쓰기",q:"த் + உ = ?",type:"choice",options:["தா","தி","து","தூ"],answer:"து",explain:"த்(ta) + உ(u) = து(tu)"},
+  {part:"유형1. 결합형 쓰기",q:"ம் + ஊ = ?",type:"choice",options:["மு","மூ","மி","மா"],answer:"மூ",explain:"ம்(ma) + ஊ(ū) = மூ(mū)"},
+  {part:"유형1. 결합형 쓰기",q:"ச் + எ = ?",type:"choice",options:["சா","சி","செ","சை"],answer:"செ",explain:"ச்(ca) + எ(e) = செ(ce)"},
+  {part:"유형1. 결합형 쓰기",q:"ந் + ஐ = ?",type:"choice",options:["நா","நி","நை","நு"],answer:"நை",explain:"ந்(na) + ஐ(ai) = நை(nai)"},
+  {part:"유형1. 결합형 쓰기",q:"ல் + ஒ = ?",type:"choice",options:["லா","லொ","லோ","லி"],answer:"லொ",explain:"ல்(la) + ஒ(o) = லொ(lo)"},
+  {part:"유형1. 결합형 쓰기",q:"ர் + ஈ = ?",type:"choice",options:["ரா","ரி","ரீ","ரு"],answer:"ரீ",explain:"ர்(ra) + ஈ(ī) = ரீ(rī)"},
+  {part:"유형1. 결합형 쓰기",q:"ட் + உ = ?",type:"choice",options:["டா","டி","டு","டூ"],answer:"டு",explain:"ட்(ṭa) + உ(u) = டு(ṭu) — 유형3 특수형태"},
+  {part:"유형1. 결합형 쓰기",q:"வ் + ஊ = ?",type:"choice",options:["வு","வூ","வி","வா"],answer:"வூ",explain:"வ்(va) + ஊ(ū) = வூ(vū) — 유형1 형태"},
+
+  // 유형 2: 결합형 분해 (4지선다)
+  {part:"유형2. 결합형 분해",q:"கி = ? + ?",type:"choice",options:["க்+இ","க்+ஈ","க்+உ","க்+ஆ"],answer:"க்+இ",explain:"கி = க்(k) + இ(i)"},
+  {part:"유형2. 결합형 분해",q:"பூ = ? + ?",type:"choice",options:["ப்+உ","ப்+ஊ","ப்+ஓ","ப்+ஆ"],answer:"ப்+ஊ",explain:"பூ = ப்(p) + ஊ(ū)"},
+  {part:"유형2. 결합형 분해",q:"தே = ? + ?",type:"choice",options:["த்+எ","த்+ஏ","த்+ஐ","த்+ஈ"],answer:"த்+ஏ",explain:"தே = த்(t) + ஏ(ē) — எ가 아니라 ஏ(장모음)!"},
+  {part:"유형2. 결합형 분해",q:"மொ = ? + ?",type:"choice",options:["ம்+ஒ","ம்+ஓ","ம்+ஔ","ம்+உ"],answer:"ம்+ஒ",explain:"மொ = ம்(m) + ஒ(o)"},
+  {part:"유형2. 결합형 분해",q:"சு = ? + ?",type:"choice",options:["ச்+உ","ச்+ஊ","ச்+இ","ச்+ஆ"],answer:"ச்+உ",explain:"சு = ச்(c) + உ(u)"},
+  {part:"유형2. 결합형 분해",q:"நா = ? + ?",type:"choice",options:["ந்+அ","ந்+ஆ","ந்+இ","ந்+ஈ"],answer:"ந்+ஆ",explain:"நா = ந்(n) + ஆ(ā)"},
+  {part:"유형2. 결합형 분해",q:"டூ = ? + ?",type:"choice",options:["ட்+உ","ட்+ஊ","ட்+ஓ","ட்+ஆ"],answer:"ட்+ஊ",explain:"டூ = ட்(ṭ) + ஊ(ū)"},
+  {part:"유형2. 결합형 분해",q:"கோ = ? + ?",type:"choice",options:["க்+ஒ","க்+ஓ","க்+ஔ","க்+ஆ"],answer:"க்+ஓ",explain:"கோ = க்(k) + ஓ(ō)"},
+
+  // 유형 3: 발음 규칙
+  {part:"유형3. 발음 규칙",q:"'거친 소리(வல்)' 자음이 아닌 것은?",type:"choice",options:["க்","ச்","ங்","ட்"],answer:"ங்",explain:"거친소리 = க், ச், ட், த், ப், ற்\nங்은 '부드러운 소리'입니다."},
+  {part:"유형3. 발음 규칙",q:"'부드러운 소리(மெல்)' 자음이 아닌 것은?",type:"choice",options:["ங்","ண்","ற்","ம்"],answer:"ற்",explain:"부드러운소리 = ங், ஞ், ண், ந், ம், ன்\nற்은 '거친 소리'입니다."},
+  {part:"유형3. 발음 규칙",q:"'보통 소리(இடை)' 자음이 아닌 것은?",type:"choice",options:["ய்","ர்","த்","வ்"],answer:"த்",explain:"보통소리 = ய், ர், ல், வ், ழ், ள்\nத்은 '거친 소리'입니다."},
+  {part:"유형3. 발음 규칙",q:"க்이 '부드러운 소리' 뒤에 올 때 발음은?",type:"choice",options:["ㅋ(k)","ㄱ(g)","ㅎ(h)","ㅇ(ng)"],answer:"ㄱ(g)",explain:"거친소리가 부드러운소리 뒤에 오면 유성음(울림소리)이 됩니다.\nக→ㄱ, ச→ㅈ, ட→ㄷ, த→ㄷ, ப→ㅂ"},
+  {part:"유형3. 발음 규칙",q:"ப்이 단어 첫머리에 올 때 발음은?",type:"choice",options:["ㅂ(b)","ㅍ/ㅃ(p)","ㅁ(m)","ㅎ(h)"],answer:"ㅍ/ㅃ(p)",explain:"거친소리는 단어 첫머리에서 무성음(안울림)으로 발음됩니다.\nப→ㅍ/ㅃ"},
+  {part:"유형3. 발음 규칙",q:"த்이 두 모음 사이에 올 때 발음은?",type:"choice",options:["ㅌ(t)","ㄷ(d)","ㄸ(tt)","ㅎ(h)"],answer:"ㄷ(d)",explain:"거친소리가 두 모음 사이에 오면 유성음이 됩니다.\nத→ㄷ"},
+
+  // 유형 4: 인칭대명사
+  {part:"유형4. 인칭대명사",q:"'나' (주격, 1인칭 단수)는?",type:"choice",options:["நான்","நீ","அவன்","நாம்"],answer:"நான்",explain:"நான் = 나 (1인칭 단수 주격)"},
+  {part:"유형4. 인칭대명사",q:"'너' (주격, 2인칭 단수)는?",type:"choice",options:["நான்","நீ","அவன்","நாம்"],answer:"நீ",explain:"நீ = 너 (2인칭 단수 주격)"},
+  {part:"유형4. 인칭대명사",q:"'당신/당신들' (주격, 2인칭 복수)는?",type:"choice",options:["நாங்கள்","நீங்கள்","அவர்கள்","நாம்"],answer:"நீங்கள்",explain:"நீங்கள் = 당신/당신들 (2인칭 복수 주격)"},
+  {part:"유형4. 인칭대명사",q:"'그분' (주격, 3인칭 존칭)은?",type:"choice",options:["அவன்","அவள்","அவர்","அவர்கள்"],answer:"அவர்",explain:"அவர் = 그분 (3인칭 존칭 주격)"},
+  {part:"유형4. 인칭대명사",q:"'나의' (사격/소유, 1인칭 단수)는?",type:"choice",options:["என்","உன்","நம்","அவன்"],answer:"என்",explain:"என் = 나의 (1인칭 단수 사격)"},
+  {part:"유형4. 인칭대명사",q:"'너의' (사격/소유, 2인칭 단수)는?",type:"choice",options:["என்","உன்","நம்","அவர்"],answer:"உன்",explain:"உன் = 너의 (2인칭 단수 사격)"},
+  {part:"유형4. 인칭대명사",q:"'당신의/당신들의' (사격/소유, 2인칭 복수)는?",type:"choice",options:["எங்கள்","உங்கள்","அவர்கள்","நம்"],answer:"உங்கள்",explain:"உங்கள் = 당신의/당신들의 (2인칭 복수 사격)"},
+  {part:"유형4. 인칭대명사",q:"'우리(듣는 사람 포함)' 주격은?",type:"choice",options:["நாம்","நாங்கள்","நீங்கள்","அவர்கள்"],answer:"நாம்",explain:"நாம் = 우리 (듣는 사람 포함)\nநாங்கள் = 우리 (듣는 사람 제외)"},
+
+  // 유형 5: 대화문 빈칸
+  {part:"유형5. 대화문",q:"வணக்கம். நீங்கள் _____?\n(안녕하세요. 당신은 누구인가요?)",type:"choice",options:["யார்","என்ன","எது","எங்கே"],answer:"யார்",explain:"யார் = 누구. '당신은 누구인가요?'"},
+  {part:"유형5. 대화문",q:"நான் தமிழ் _____.\n(나는 타밀어 학생입니다.)",type:"choice",options:["ஆசிரியர்","பேராசிரியர்","மாணவன்","நண்பன்"],answer:"மாணவன்",explain:"மாணவன் = 학생(남). '나는 타밀어 학생이다.'"},
+  {part:"유형5. 대화문",q:"என் _____ சுரேஷ் குமார்.\n(제 이름은 수레시 쿠마르입니다.)",type:"choice",options:["ஊர்","வீடு","பெயர்","புத்தகம்"],answer:"பெயர்",explain:"பெயர் = 이름. 'என் பெயர் = 제 이름은'"},
+  {part:"유형5. 대화문",q:"இது கன்னட _____.\n(이것은 깐나다 교과서입니다.)",type:"choice",options:["புத்தகம்","பாடப்புத்தகம்","நாவல்","படம்"],answer:"பாடப்புத்தகம்",explain:"பாடப்புத்தகம் = 교과서. புத்தகம்은 그냥 '책'"},
+  {part:"유형5. 대화문",q:"இது _____?\n(이것은 무엇인가요?)",type:"choice",options:["யார்","என்ன","எது","எங்கே"],answer:"என்ன",explain:"என்ன = 무엇. 'இது என்ன? = 이것은 무엇?'"},
+  {part:"유형5. 대화문",q:"இது நாவல் _____.\n(이것은 소설이 아닙니다.)",type:"choice",options:["இல்லை","ஆம்","நல்ல","ஒரு"],answer:"இல்லை",explain:"இல்லை = 아니다/아닙니다. 부정 표현은 문장 끝에!"},
+
+  // 유형 6: 단어/언어
+  {part:"유형6. 단어/언어",q:"'따밀어'를 타밀어로?",type:"choice",options:["தமிழ்","கன்னடம்","தெலுங்கு","மலையாளம்"],answer:"தமிழ்",explain:"தமிழ் = 따밀어"},
+  {part:"유형6. 단어/언어",q:"'깐나다어'를 타밀어로?",type:"choice",options:["தமிழ்","கன்னடம்","தெலுங்கு","மலையாளம்"],answer:"கன்னடம்",explain:"கன்னடம் = 깐나다어"},
+  {part:"유형6. 단어/언어",q:"'뗄루구어'를 타밀어로?",type:"choice",options:["தமிழ்","கன்னடம்","தெலுங்கு","மலையாளம்"],answer:"தெலுங்கு",explain:"தெலுங்கு = 뗄루구어"},
+  {part:"유형6. 단어/언어",q:"'말라얄람어'를 타밀어로?",type:"choice",options:["தமிழ்","கன்னடம்","தெலுங்கு","மலையாளம்"],answer:"மலையாளம்",explain:"மலையாளம் = 말라얄람어"}
+];
+
+/* ═══════════════════ STATE ═══════════════════ */
+var state = {
+  answers: {},
+  answered: new Set(),
+  score: 0,
+  activeIdxs: []
+};
+
+/* ═══════════════════ INIT ═══════════════════ */
+function init(idxs) {
+  state = { answers: {}, answered: new Set(), score: 0, activeIdxs: idxs };
+
+  var container = document.getElementById('questions-container');
+  container.innerHTML = '';
+
+  var lastPart = '';
+  idxs.forEach(function(idx) {
+    var q = questions[idx];
+    if (q.part !== lastPart) {
+      lastPart = q.part;
+      var label = document.createElement('div');
+      label.className = 'part-label';
+      label.textContent = q.part;
+      container.appendChild(label);
+    }
+    container.appendChild(buildCard(q, idx));
+  });
+
+  updateProgress();
+}
+
+/* ═══════════════════ BUILD CARD ═══════════════════ */
+function buildCard(q, idx) {
+  var card = document.createElement('div');
+  card.className = 'q-card';
+  card.id = 'card-' + idx;
+
+  var letters = ['①','②','③','④'];
+  var qText = q.q.replace(/\n/g, '<br>');
+
+  var html = '<div class="q-num">문제 ' + (idx + 1) + '</div>';
+  html += '<div class="q-text">' + qText + '</div>';
+  html += '<div class="mc-wrap">';
+  q.options.forEach(function(opt, i) {
+    html += '<button class="mc-btn" id="mc-' + idx + '-' + i + '" onclick="answerMC(' + idx + ',' + i + ')">'
+      + '<span class="mc-letter">' + letters[i] + '</span>' + opt + '</button>';
+  });
+  html += '</div>';
+  html += '<div class="feedback" id="fb-' + idx + '"></div>';
+
+  card.innerHTML = html;
+  return card;
+}
+
+/* ═══════════════════ ANSWER HANDLER ═══════════════════ */
+function answerMC(idx, optIdx) {
+  if (state.answered.has(idx)) return;
+  var q = questions[idx];
+  var choice = q.options[optIdx];
+  var correct = (choice === q.answer);
+
+  state.answered.add(idx);
+  state.answers[idx] = { correct: correct, userAnswer: choice };
+  if (correct) state.score += 1;
+
+  document.getElementById('card-' + idx).classList.add(correct ? 'answered-correct' : 'answered-wrong');
+
+  q.options.forEach(function(opt, i) {
+    var btn = document.getElementById('mc-' + idx + '-' + i);
+    btn.disabled = true;
+    if (i === optIdx) btn.classList.add(correct ? 'selected-correct' : 'selected-wrong');
+    if (!correct && opt === q.answer) btn.classList.add('correct-highlight');
+  });
+
+  showFeedback(idx, correct, q.answer, q.explain);
+  updateProgress();
+
+  if (state.answered.size === state.activeIdxs.length) {
+    setTimeout(showResult, 800);
+  }
+}
+
+/* ═══════════════════ HELPERS ═══════════════════ */
+function showFeedback(idx, correct, answer, explain) {
+  var fb = document.getElementById('fb-' + idx);
+  fb.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
+  if (correct) {
+    fb.innerHTML = '<div class="fb-title">✅ 정답!</div>'
+      + '<div class="fb-exp">' + explain.replace(/\n/g,'<br>') + '</div>';
+  } else {
+    fb.innerHTML = '<div class="fb-title">❌ 틀렸어요</div>'
+      + '<div class="fb-answer">정답: ' + answer + '</div>'
+      + '<div class="fb-exp" style="margin-top:4px">' + explain.replace(/\n/g,'<br>') + '</div>';
+  }
+  setTimeout(function(){ fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
+}
+
+function updateProgress() {
+  var done = state.answered.size;
+  var total = state.activeIdxs.length;
+  var pct = total ? (done / total * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = done + ' / ' + total + ' 완료';
+  document.getElementById('score-text').textContent = state.score + '점';
+}
+
+/* ═══════════════════ RESULT ═══════════════════ */
+function showResult() {
+  var maxScore = state.activeIdxs.length;
+
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+
+  document.getElementById('r-score').textContent = state.score;
+  document.getElementById('r-max').textContent = '/ ' + maxScore + '점';
+
+  var pct = Math.round(state.score / maxScore * 100);
+  var grade, sub;
+  if      (pct === 100) { grade = '🏆 만점! 완벽해요!';    sub = '모든 문제를 맞혔습니다!'; }
+  else if (pct >= 80)   { grade = '😊 우수!';              sub = '조금만 더 복습하면 완벽!'; }
+  else if (pct >= 60)   { grade = '🙂 보통';               sub = '틀린 문제를 다시 풀어봐요'; }
+  else                  { grade = '😅 분발 필요!';          sub = '타밀어 다시 확인해봐요'; }
+
+  document.getElementById('r-grade').textContent = grade;
+  document.getElementById('r-sub').textContent = sub;
+
+  var wrongIdxs = state.activeIdxs.filter(function(idx){ return state.answers[idx] && !state.answers[idx].correct; });
+  var wrongList = document.getElementById('wrong-list');
+  var wrongSection = document.getElementById('wrong-section');
+  wrongList.innerHTML = '';
+
+  if (wrongIdxs.length === 0) {
+    wrongSection.innerHTML = '<div class="all-correct-banner">🎉 모든 문제 정답! 훌륭해요!</div>';
+    document.getElementById('retry-wrong-btn').style.display = 'none';
+  } else {
+    document.getElementById('retry-wrong-btn').style.display = '';
+    wrongIdxs.forEach(function(idx) {
+      var q = questions[idx];
+      var ua = state.answers[idx].userAnswer;
+      var div = document.createElement('div');
+      div.className = 'wrong-card';
+      div.innerHTML = '<div class="wc-num">문제 ' + (idx + 1) + ' (' + q.part + ')</div>'
+        + '<div class="wc-q">' + q.q.replace(/\n/g,'<br>') + '</div>'
+        + '<div class="wc-mine">내 답: ' + ua + '</div>'
+        + '<div class="wc-ans">정답: ' + q.answer + '</div>'
+        + '<div class="wc-exp">' + q.explain.replace(/\n/g,'<br>') + '</div>';
+      wrongList.appendChild(div);
+    });
+  }
+  window.scrollTo(0, 0);
+}
+
+/* ═══════════════════ ACTIONS ═══════════════════ */
+function restartAll() {
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('wrong-section').innerHTML =
+    '<div class="result-section-title">❌ 틀린 문제 해설</div><div id="wrong-list"></div>';
+  document.getElementById('retry-wrong-btn').style.display = '';
+  init(questions.map(function(_, i){ return i; }));
+  window.scrollTo(0, 0);
+}
+
+function retryWrong() {
+  var wrongIdxs = state.activeIdxs.filter(function(idx){ return state.answers[idx] && !state.answers[idx].correct; });
+  if (!wrongIdxs.length) return;
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('wrong-section').innerHTML =
+    '<div class="result-section-title">❌ 틀린 문제 해설</div><div id="wrong-list"></div>';
+  document.getElementById('retry-wrong-btn').style.display = '';
+  init(wrongIdxs);
+  window.scrollTo(0, 0);
+}
+
+/* ═══════════════════ START ═══════════════════ */
+init(questions.map(function(_, i){ return i; }));
+</script>
+</body>
+</html>
